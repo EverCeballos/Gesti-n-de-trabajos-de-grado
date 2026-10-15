@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Trabajos de Grado - Maestría en Ingeniería UQ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Encabezado Principal -->
+  <header class="header-uq text-white shadow-xl relative z-10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-4">
+        <div class="bg-green-800 p-3 rounded-2xl border border-green-600">
+          <i class="fa-solid fa-graduation-cap text-3xl text-yellow-300"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black tracking-tight text-white">Gestión de Trabajos de Grado</h1>
+          <p class="text-xs text-green-200 font-medium">Maestría en Ingeniería — Universidad del Quindío</p>
+        </div>
+      </div>
+      <div id="sessionArea"
+        class="flex items-center space-x-3 bg-green-800 px-4 py-2 rounded-xl border border-green-600 text-xs text-white">
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Estado y Plazo (Texto Blanco sobre Fondo Oscuro con Contraste Total) -->
+  <section class="banner-uq py-2.5 px-6 shadow-md border-b border-green-900">
+    <div class="max-w-7xl mx-auto text-xs flex flex-col sm:flex-row justify-between items-center gap-3">
+      <span id="roleBadge"
+        class="badge-status font-bold px-3.5 py-1 rounded-full uppercase tracking-wider text-[11px] flex items-center gap-2">
+        <i class="fa-solid fa-circle-user text-yellow-400"></i> Estado: No autenticado
+      </span>
+      <div id="deadlineBanner" class="deadline-box flex items-center space-x-2 px-4 py-1.5 rounded-xl">
+        <i class="fa-solid fa-clock text-yellow-400"></i>
+        <span class="text-white font-medium">Plazo Oficial de Entrega: <strong id="deadlineDisplay"
+            class="font-bold text-yellow-300">Sin definir</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
+
+    <!-- TARJETA DE AUTENTICACIÓN / REGISTRO / RECUPERACIÓN -->
+    <div id="authSection" class="max-w-md mx-auto glass-card rounded-3xl p-8 mb-8">
+
+      <!-- Pestañas de Navegación -->
+      <div id="authTabs" class="flex border-b border-gray-300 mb-6 text-center text-sm font-bold">
+        <button id="tabLogin" type="button" onclick="switchAuthTab('login')"
+          class="w-1/2 py-2.5 border-b-2 border-green-700 text-green-800 font-extrabold focus:outline-none">Iniciar
+          Sesión</button>
+        <button id="tabRegister" type="button" onclick="switchAuthTab('register')"
+          class="w-1/2 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-green-700 font-bold focus:outline-none">Registrarse</button>
+      </div>
+
+      <!-- Formulario Iniciar Sesión -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Nombre de Usuario o Correo</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500"><i
+                class="fa-solid fa-user text-xs"></i></span>
+            <input type="text" id="loginUser" required class="w-full text-sm rounded-xl pl-9 pr-3.5 py-2.5 input-custom"
+              placeholder="Ej: Jorgito o usuario@uniquindio.edu.co">
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-xs font-bold text-gray-700">Contraseña</label>
+            <a href="#" onclick="switchAuthTab('forgot')"
+              class="text-[11px] text-green-700 hover:text-green-900 hover:underline font-bold">¿Olvidaste tu
+              contraseña?</a>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500"><i
+                class="fa-solid fa-lock text-xs"></i></span>
+            <input type="password" id="loginPassword" required
+              class="w-full text-sm rounded-xl pl-9 pr-3.5 py-2.5 input-custom" placeholder="••••••••">
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full btn-green font-bold text-sm py-3 rounded-xl shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket text-white"></i> Ingresar al Sistema
+        </button>
+      </form>
+
+      <!-- Formulario Registro -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3.5 hidden">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nombre Completo:</label>
+          <input type="text" id="regName" required class="w-full text-sm rounded-xl px-3.5 py-2.5 input-custom"
+            placeholder="Jorge Aldana">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nombre de Usuario:</label>
+          <input type="text" id="regUsername" required class="w-full text-sm rounded-xl px-3.5 py-2.5 input-custom"
+            placeholder="Jorgito">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Correo Electrónico:</label>
+          <input type="email" id="regEmail" required class="w-full text-sm rounded-xl px-3.5 py-2.5 input-custom"
+            placeholder="ejemplo@uniquindio.edu.co">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Contraseña:</label>
+          <input type="password" id="regPassword" required minlength="6"
+            class="w-full text-sm rounded-xl px-3.5 py-2.5 input-custom" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Asignar Rol Académico:</label>
+          <select id="regRole" required
+            class="w-full text-sm rounded-xl px-3.5 py-2.5 input-custom bg-white font-medium">
+            <option value="estudiante">👨‍🎓 Estudiante (Autor de Proyecto)</option>
+            <option value="director">👨‍🏫 Director</option>
+            <option value="jurado">⚖️ Jurado</option>
+            <option value="coordinador">🏛️ Coordinador de Énfasis</option>
+          </select>
+        </div>
+        <button type="submit"
+          class="w-full btn-green font-bold text-sm py-3 rounded-xl shadow-md flex justify-center items-center gap-2">
+          <i class="fa-solid fa-user-plus text-white"></i> Registrar Cuenta
+        </button>
+      </form>
+
+      <!-- Módulo de Recuperación -->
+      <div id="forgotFormContainer" class="hidden reset-card-custom">
+        <div class="text-center mb-4">
+          <div class="reset-icon-header">
+            <i class="fa-solid fa-unlock-keyhole"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-green-900">Recuperar Acceso</h3>
+          <p class="text-xs text-green-700 mt-1">Sigue los pasos para restablecer tu contraseña de forma segura.</p>
+        </div>
+
+        <form id="sendCodeForm" onsubmit="handleSendCode(event)"
+          class="space-y-4 bg-white p-4 rounded-xl shadow-sm border border-green-100">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Ingresa tu Correo o Usuario:</label>
+            <input type="text" id="resetAccountInput" required
+              class="w-full text-sm rounded-xl px-3.5 py-2.5 input-reset"
+              placeholder="ejemplo@uniquindio.edu.co o Jorgito">
+          </div>
+          <button type="submit"
+            class="w-full bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-2.5 rounded-xl shadow transition duration-200 flex justify-center items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Enviar Código
+          </button>
+        </form>
+
+        <div id="codeNotification"
+          class="hidden mt-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-4 shadow-sm text-sm text-yellow-900 space-y-2 relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 opacity-10">
+            <i class="fa-solid fa-envelope text-6xl text-yellow-600"></i>
+          </div>
+          <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-green-600"></i> Código
+            Generado</p>
+          <p class="text-xs text-gray-700">Enviado a: <span id="targetEmailDisplay"
+              class="font-mono font-bold text-gray-900"></span></p>
+          <div class="bg-white p-3 rounded-xl text-center border border-amber-300 text-sm text-green-800 shadow-inner">
+            <i class="fa-solid fa-inbox text-xl mb-1 block"></i>
+            Por favor, revisa tu bandeja de entrada. <br>
+            <span class="text-[10px] text-gray-500 italic mt-1 block">(Demo: Revisa la alerta en pantalla o la
+              consola)</span>
+          </div>
+        </div>
+
+        <form id="verifyCodeForm" onsubmit="handleResetPassword(event)"
+          class="space-y-4 hidden mt-4 bg-white p-4 rounded-xl shadow-sm border border-green-100">
+          <div class="mb-2 border-b border-gray-100 pb-2">
+            <h4 class="text-sm font-bold text-gray-800"><i class="fa-solid fa-shield-halved text-green-600 mr-1"></i>
+              Verificación y Nueva Clave</h4>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Crea tu Nueva Contraseña:</label>
+            <input type="password" id="inputNewPassword" required minlength="4"
+              class="w-full text-sm rounded-xl p-2.5 input-reset" placeholder="••••••••">
+          </div>
+          <button type="submit"
+            class="w-full bg-green-800 hover:bg-green-900 text-white font-bold text-sm py-3 rounded-xl shadow-md transition duration-200 flex justify-center items-center gap-2">
+            <i class="fa-solid fa-key"></i> Restablecer Contraseña
+          </button>
+        </form>
+
+        <div class="text-center pt-4">
+          <button type="button" onclick="switchAuthTab('login')"
+            class="text-xs text-green-800 hover:text-green-600 font-bold transition">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio de Sesión
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PLATAFORMA PRINCIPAL AUTENTICADA -->
+    <div id="appSection" class="hidden space-y-6">
+
+      <!-- 1. MÓDULO ESTUDIANTE -->
+      <div id="panel-estudiante" class="role-panel hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fa-solid fa-cloud-arrow-up text-green-700 mr-2 text-lg"></i> Envío de Documentos de Trabajo de
+            Grado
+          </h3>
+          <div id="studentDeadlineAlert" class="mb-4 p-3.5 rounded-xl text-xs border font-bold"></div>
+
+          <form onsubmit="submitSubmission(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Título de la Entrega / Avance</label>
+                <input type="text" id="subTitle" required placeholder="Ej: Documento Final para Evaluación de Jurados"
+                  class="w-full text-sm rounded-xl p-2.5 input-custom">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Destinatario del Envío</label>
+                <select id="subTarget" required class="w-full text-sm rounded-xl p-2.5 input-custom bg-white">
+                  <option value="director">Director (Para revisión/aval)</option>
+                  <option value="jurado">Jurado (Para dictamen/calificación)</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Adjuntar Trabajo (PDF, Word, ZIP, etc.)</label>
+              <input type="file" id="subFile" required
+                class="block w-full text-sm text-gray-700 border border-gray-400 rounded-xl bg-slate-50 p-2.5 cursor-pointer">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Comentarios u Observaciones del
+                Estudiante</label>
+              <textarea id="subNotes" rows="2" class="w-full text-sm rounded-xl p-2.5 input-custom"
+                placeholder="Resumen metodológico o aclaraciones sobre el archivo adjunto..."></textarea>
+            </div>
+            <button type="submit"
+              class="btn-green font-bold text-sm px-5 py-2.5 rounded-xl shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane text-white"></i> Registrar Envío
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 2. MÓDULO REVISOR (DIRECTOR / JURADO) -->
+      <div id="panel-revisor" class="role-panel hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <h3 id="revisorTitle" class="text-base font-bold text-gray-800 mb-1 flex items-center"></h3>
+          <p id="revisorSubtitle" class="text-xs text-gray-600 mb-5"></p>
+
+          <div class="overflow-x-auto mb-6 rounded-xl border border-gray-200">
+            <table class="min-w-full text-xs text-left text-gray-700">
+              <thead class="bg-gray-100 text-gray-800 font-bold border-b border-gray-300">
+                <tr>
+                  <th class="py-3 px-4">Fecha Envío</th>
+                  <th class="py-3 px-4">Estudiante</th>
+                  <th class="py-3 px-4">Documento / Archivo</th>
+                  <th class="py-3 px-4">Oportunidad</th>
+                  <th class="py-3 px-4">Estado / Nota</th>
+                  <th class="py-3 px-4 text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="revisorSubmissionsTable" class="divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+
+          <div id="feedbackFormContainer" class="hidden bg-green-50 border border-green-300 rounded-2xl p-5 shadow-sm">
+            <h4 class="text-sm font-bold text-green-900 mb-3 flex items-center">
+              <i class="fa-solid fa-clipboard-check mr-2 text-green-700"></i> Emitir Valoración para: <span
+                id="feedbackTargetTitle" class="ml-1 underline"></span>
+            </h4>
+
+            <form onsubmit="submitFeedback(event)" class="space-y-3.5">
+              <input type="hidden" id="feedbackSubId">
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Concepto / Dictamen</label>
+                  <select id="feedbackDecision" required
+                    class="w-full text-xs rounded-xl p-2.5 bg-white input-custom"></select>
+                </div>
+
+                <div id="gradeFieldContainer">
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Calificación Definitiva (0.0 - 5.0)</label>
+                  <input type="number" id="feedbackGrade" step="0.1" min="0" max="5" placeholder="Ej: 4.8"
+                    class="w-full text-xs rounded-xl p-2.5 bg-white input-custom">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Adjuntar Correcciones / Acta</label>
+                  <input type="file" id="feedbackFile"
+                    class="block w-full text-xs text-gray-700 border border-gray-300 rounded-xl cursor-pointer bg-white p-2">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Justificación Técnica / Observaciones
+                  Académicas</label>
+                <textarea id="feedbackText" required rows="3" class="w-full text-sm rounded-xl p-2.5 input-custom"
+                  placeholder="Escriba aquí los comentarios detallados o correcciones solicitadas..."></textarea>
+              </div>
+
+              <div class="flex gap-2.5 pt-1">
+                <button type="submit" class="btn-green font-bold text-xs px-4 py-2 rounded-xl shadow">
+                  Guardar y Notificar
+                </button>
+                <button type="button" onclick="closeFeedbackForm()"
+                  class="bg-gray-500 hover:bg-gray-600 text-white font-bold text-xs px-4 py-2 rounded-xl">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MÓDULO COORDINADOR DE ÉNFASIS -->
+      <div id="panel-coordinador" class="role-panel hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center">
+            <i class="fa-solid fa-business-time text-green-700 mr-2 text-lg"></i> Ajustar Plazo Oficial de Entregas
+            (Límite Global)
+          </h3>
+          <form onsubmit="setDeadline(event)" class="flex flex-col sm:flex-row gap-4 items-end">
+            <div class="w-full sm:w-auto">
+              <label class="block text-xs font-bold text-gray-700 mb-1">Fecha y Hora Límite</label>
+              <input type="datetime-local" id="deadlineInput" required
+                class="text-sm rounded-xl p-2.5 bg-white w-full input-custom">
+            </div>
+            <button type="submit" class="btn-green font-bold text-xs px-5 py-3 rounded-xl shadow">Actualizar
+              Límite</button>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center">
+            <i class="fa-solid fa-users text-green-700 mr-2 text-lg"></i> Directorio de Usuarios y Roles Registrados
+          </h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200">
+            <table class="min-w-full text-xs text-left text-gray-700">
+              <thead class="bg-gray-100 text-gray-800 font-bold border-b border-gray-300">
+                <tr>
+                  <th class="py-2.5 px-4">Nombre</th>
+                  <th class="py-2.5 px-4">Usuario</th>
+                  <th class="py-2.5 px-4">Correo Institucional</th>
+                  <th class="py-2.5 px-4">Rol Asignado</th>
+                </tr>
+              </thead>
+              <tbody id="registeredUsersTable" class="divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. HISTORIAL GENERAL -->
+      <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 mt-6">
+        <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center">
+          <i class="fa-solid fa-clock-rotate-left text-green-700 mr-2 text-lg"></i> Trazabilidad Completa y Libro de
+          Calificaciones
+        </h3>
+        <div class="overflow-x-auto rounded-xl border border-gray-200">
+          <table class="min-w-full text-xs text-left text-gray-700">
+            <thead class="bg-gray-100 text-gray-800 font-bold border-b border-gray-300">
+              <tr>
+                <th class="py-3 px-4">Fecha</th>
+                <th class="py-3 px-4">Estudiante</th>
+                <th class="py-3 px-4">Evaluador / Rol</th>
+                <th class="py-3 px-4">Detalle Trabajo</th>
+                <th class="py-3 px-4">Plazo</th>
+                <th class="py-3 px-4">Nota Jurado</th>
+                <th class="py-3 px-4">Concepto Emitido</th>
+              </tr>
+            </thead>
+            <tbody id="historyTable" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-300 text-xs py-5 mt-auto border-t border-gray-800 text-center">
+    <p class="font-bold">Sistema de Gestión de Trabajos de Grado — Universidad del Quindío</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

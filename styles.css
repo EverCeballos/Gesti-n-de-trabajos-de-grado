@@ -1,0 +1,89 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f1f5f9;
+}
+
+.glass-card {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.header-uq {
+  background-color: #065f46;
+}
+
+.banner-uq {
+  background-color: #022c22;
+  color: #ffffff;
+}
+
+.input-custom {
+  background-color: #f8fafc;
+  border: 1px solid #94a3b8;
+  color: #0f172a;
+}
+
+.input-custom:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.2);
+}
+
+.btn-green {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+}
+
+.btn-green:hover {
+  background-color: #166534 !important;
+}
+
+.badge-status {
+  background-color: #064e3b;
+  color: #fef08a;
+  border: 1px solid #15803d;
+}
+
+.deadline-box {
+  background-color: #064e3b;
+  color: #ffffff;
+  border: 1px solid #15803d;
+}
+
+/* Custom design for Reset Password */
+.reset-card-custom {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+  box-shadow: 0 4px 15px -3px rgba(34, 197, 94, 0.2);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+}
+
+.reset-icon-header {
+  background-color: #166534;
+  color: white;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 1rem auto;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px -2px rgba(22, 101, 52, 0.4);
+}
+
+.input-reset {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #4ade80;
+  color: #0f172a;
+}
+
+.input-reset:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: #166534;
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.2);
+}
