@@ -141,17 +141,18 @@
           <div class="reset-icon-header">
             <i class="fa-solid fa-unlock-keyhole"></i>
           </div>
-          <h3 class="text-lg font-extrabold text-green-900">Recuperar Acceso</h3>
-          <p class="text-xs text-green-700 mt-1">Sigue los pasos para restablecer tu contraseña de forma segura.</p>
+          <h3 id="recoveryTitle" class="text-lg font-extrabold text-green-900">Recuperar Acceso</h3>
+          <p id="recoverySubtitle" class="text-xs text-green-700 mt-1">Sigue los pasos para restablecer tu contraseña.</p>
         </div>
 
+        <!-- Paso 1: Solicitar Código -->
         <form id="sendCodeForm" onsubmit="handleSendCode(event)"
           class="space-y-4 bg-white p-4 rounded-xl shadow-sm border border-green-100">
           <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Ingresa tu Correo o Usuario:</label>
             <input type="text" id="resetAccountInput" required
               class="w-full text-sm rounded-xl px-3.5 py-2.5 input-reset"
-              placeholder="ejemplo@uniquindio.edu.co o Jorgito">
+              placeholder="ejemplo@uniquindio.edu.co o tu_usuario">
           </div>
           <button type="submit"
             class="w-full bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-2.5 rounded-xl shadow transition duration-200 flex justify-center items-center gap-2">
@@ -159,37 +160,66 @@
           </button>
         </form>
 
-        <div id="codeNotification"
-          class="hidden mt-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-4 shadow-sm text-sm text-yellow-900 space-y-2 relative overflow-hidden">
-          <div class="absolute -right-4 -top-4 opacity-10">
-            <i class="fa-solid fa-envelope text-6xl text-yellow-600"></i>
+        <!-- Paso 2: Verificación del Código (Solo se muestra después de enviar el código) -->
+        <div id="codeSection" class="hidden space-y-4">
+          <div id="codeNotification"
+            class="bg-green-50 border-l-4 border-green-600 rounded-r-xl p-4 shadow-sm text-sm text-green-900 space-y-2 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 opacity-10">
+              <i class="fa-solid fa-envelope text-6xl text-green-700"></i>
+            </div>
+            <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-green-600"></i> Código Enviado</p>
+            <p class="text-xs text-gray-700">Enviado a: <span id="targetEmailDisplay"
+                class="font-mono font-bold text-gray-900"></span></p>
+            <div class="bg-white p-3.5 rounded-xl text-center border border-green-200 text-xs text-green-800 shadow-inner">
+              <i class="fa-solid fa-inbox text-2xl mb-1.5 text-green-600 block"></i>
+              Por favor revisa tu bandeja de entrada o carpeta de spam.<br>
+              <span class="text-[11px] text-gray-600 mt-1 block">Ingresa el código de 6 dígitos para validar tu identidad.</span>
+            </div>
           </div>
-          <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-green-600"></i> Código
-            Generado</p>
-          <p class="text-xs text-gray-700">Enviado a: <span id="targetEmailDisplay"
-              class="font-mono font-bold text-gray-900"></span></p>
-          <div class="bg-white p-3 rounded-xl text-center border border-amber-300 text-sm text-green-800 shadow-inner">
-            <i class="fa-solid fa-inbox text-xl mb-1 block"></i>
-            Por favor, revisa tu bandeja de entrada. <br>
-            <span class="text-[10px] text-gray-500 italic mt-1 block">(Demo: Revisa la alerta en pantalla o la
-              consola)</span>
-          </div>
+
+          <form id="verifyCodeForm" onsubmit="handleVerifyCode(event)"
+            class="space-y-4 bg-white p-4 rounded-xl shadow-sm border border-green-100">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Código de Verificación (6 dígitos):</label>
+              <input type="text" id="inputVerificationCode" required maxlength="6"
+                class="w-full text-sm rounded-xl p-2.5 input-reset font-mono text-center tracking-widest font-bold text-lg" placeholder="123456">
+            </div>
+            <button id="btnValidateCode" type="submit"
+              class="w-full bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-2.5 rounded-xl shadow transition duration-200 flex justify-center items-center gap-2">
+              <i class="fa-solid fa-check-double"></i> Confirmar Código
+            </button>
+            <div class="text-center pt-1">
+              <button type="button" onclick="cancelVerifyCode()"
+                class="text-xs text-gray-500 hover:text-green-800 transition">
+                <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Cambiar correo o reenviar
+              </button>
+            </div>
+          </form>
         </div>
 
-        <form id="verifyCodeForm" onsubmit="handleResetPassword(event)"
-          class="space-y-4 hidden mt-4 bg-white p-4 rounded-xl shadow-sm border border-green-100">
-          <div class="mb-2 border-b border-gray-100 pb-2">
-            <h4 class="text-sm font-bold text-gray-800"><i class="fa-solid fa-shield-halved text-green-600 mr-1"></i>
-              Verificación y Nueva Clave</h4>
+        <!-- Paso 3: Crear Nueva Contraseña (Única sección que se muestra tras confirmar el código) -->
+        <form id="newPasswordForm" onsubmit="handleResetPassword(event)"
+          class="space-y-4 hidden bg-white p-5 rounded-xl shadow-md border-2 border-green-300">
+          <div class="mb-3 border-b border-gray-100 pb-2">
+            <h4 class="text-sm font-extrabold text-green-900 flex items-center gap-2">
+              <i class="fa-solid fa-key text-green-600"></i>
+              Crea tu Nueva Contraseña
+            </h4>
+            <p class="text-xs text-gray-500 mt-0.5">Ingresa tu nueva clave de acceso.</p>
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Crea tu Nueva Contraseña:</label>
-            <input type="password" id="inputNewPassword" required minlength="4"
-              class="w-full text-sm rounded-xl p-2.5 input-reset" placeholder="••••••••">
+            <label class="block text-xs font-bold text-gray-700 mb-1">Nueva Contraseña:</label>
+            <input type="password" id="inputNewPassword" required minlength="6"
+              class="w-full text-sm rounded-xl p-2.5 input-reset" placeholder="Mínimo 6 caracteres">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Confirmar Nueva Contraseña:</label>
+            <input type="password" id="inputConfirmPassword" required minlength="6"
+              class="w-full text-sm rounded-xl p-2.5 input-reset" placeholder="Repite la contraseña">
           </div>
           <button type="submit"
             class="w-full bg-green-800 hover:bg-green-900 text-white font-bold text-sm py-3 rounded-xl shadow-md transition duration-200 flex justify-center items-center gap-2">
-            <i class="fa-solid fa-key"></i> Restablecer Contraseña
+            <i class="fa-solid fa-floppy-disk"></i> Guardar Nueva Contraseña
           </button>
         </form>
 
@@ -390,8 +420,7 @@
     <p class="font-bold">Sistema de Gestión de Trabajos de Grado — Universidad del Quindío</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 
 </html>
